@@ -33,7 +33,11 @@ defmodule MazeAvatarTest do
 
 
   test "draw Ascii maze" do
-    IO.puts "TODO"
+    mazeMap = MazeAvatar.fillGrid(2, 2)
+              |> MazeAvatar.digCellAt(0, 1)
+              |> MazeAvatar.drawMaze()
+
+    assert mazeMap == "X \nXX"
   end
 
 end

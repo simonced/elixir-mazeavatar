@@ -12,9 +12,30 @@ defmodule MazeAvatar do
   end
 
 
-  # TODO
+  # TODO this function will generate the maze
   def generate(width_, height_) do
-    IO.puts "TODO"
+    fillGrid(width_, height_)
+           |> digEntrance()
+           |> digMaze()
+           |> digExit()
+  end
+
+
+  # TODO generate an entrance an the TOP of the maze at a random location
+  def digEntrance(maze_) do
+    maze_
+  end
+
+
+  # TODO starts from entrance and generate path randomly
+  def digMaze(maze_) do
+    maze_
+  end
+
+
+  # TODO find a position for the exit at the BOTTOM of the maze
+  def digExit(maze_) do
+    maze_
   end
 
 
@@ -35,6 +56,36 @@ defmodule MazeAvatar do
       height: height_,
       cells: (for x <- 0..width_-1, y <- 0..height_-1, do: %{x: x, y: y, wall: true})
     }
+  end
+
+
+  # generates a map of the maze
+  def drawMaze(maze_) do
+    drawMap(maze_.cells)
+    |> String.codepoints()
+    |> Enum.chunk(maze_.width)
+    |> Enum.join("\n")
+  end
+
+
+  # returns a list representing the cells
+  # @param List cells
+  def drawMap(cells, map_ \\ "", position \\ 0)
+
+  def drawMap([], map_ , _), do: map_
+
+  def drawMap([cell_|cells_], map_ , position) do
+    drawMap(cells_, map_ <> drawCell(cell_), position + 1)
+  end
+
+
+  # returns a character
+  # - X if wall and SPACE otherwise
+  def drawCell(cell_) do
+    case cell_.wall do
+      true -> "X"
+      _ -> " "
+    end
   end
 
 
