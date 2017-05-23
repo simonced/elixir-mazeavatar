@@ -13,6 +13,7 @@ defmodule MazeAvatar do
 
 
   # TODO this function will generate the maze
+  # @return maze as %{width, height, cell[]}
   def generate(width_, height_) do
     fillGrid(width_, height_)
            |> digEntrance()
@@ -40,15 +41,17 @@ defmodule MazeAvatar do
 
 
   # TODO
-  def savePng(grid_) do
+  def savePng(_grid_) do
     IO.puts "TODO"
   end
 
 
   # generate a grid of the maze size
   # with only walls!
-  # @return %{width, height, cells (list)}
+  # @return %{width, height, cells[])}
   # each cell is a map %{x (int), y (int), wall (boolean)}
+  # ?do I need to have a map for each cell? only a wall boolean could be enough maybe?
+  # will see later
   def fillGrid(width_, height_) do
     # making a grid where each entry is a map with position and a flag
     %{
@@ -61,7 +64,7 @@ defmodule MazeAvatar do
 
   # generates a map of the maze
   def drawMaze(maze_) do
-    drawMap(maze_.cells)
+    _drawMap(maze_.cells)
     |> String.codepoints()
     |> Enum.chunk(maze_.width)
     |> Enum.join("\n")
@@ -70,12 +73,12 @@ defmodule MazeAvatar do
 
   # returns a list representing the cells
   # @param List cells
-  def drawMap(cells, map_ \\ "", position \\ 0)
+  def _drawMap(cells, map_ \\ "", position \\ 0)
 
-  def drawMap([], map_ , _), do: map_
+  def _drawMap([], map_ , _), do: map_
 
-  def drawMap([cell_|cells_], map_ , position) do
-    drawMap(cells_, map_ <> drawCell(cell_), position + 1)
+  def _drawMap([cell_|cells_], map_ , position) do
+    _drawMap(cells_, map_ <> drawCell(cell_), position + 1)
   end
 
 
