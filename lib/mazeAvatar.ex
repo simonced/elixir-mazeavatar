@@ -57,13 +57,13 @@ defmodule MazeAvatar do
     %{
       width: width_,
       height: height_,
-      cells: (for x <- 0..width_-1, y <- 0..height_-1, do: %{x: x, y: y, wall: true})
+      cells: (for y <- 0..width_-1, x <- 0..height_-1, do: %{x: x, y: y, wall: true})
     }
   end
 
 
-  # generates a map of the maze
-  def drawMaze(maze_) do
+  # generates a map of the maze in Ascii format
+  def drawMazeAscii(maze_) do
     _drawMap(maze_.cells)
     |> String.codepoints()
     |> Enum.chunk(maze_.width)
@@ -97,7 +97,7 @@ defmodule MazeAvatar do
   # @param x_ and y_ int
   # @return int
   def getPos(maze_, x_, y_) do
-    maze_.width * x_ + y_
+    y_ * maze_.width + x_
   end
 
 
@@ -110,9 +110,10 @@ defmodule MazeAvatar do
 
   # returns a new grid with a cell dug at position x y
   def digCellAt(maze_, x_, y_) do
+    pos = getPos(maze_, x_, y_)
     %{width: maze_.width,
       height: maze_.height,
-      cells: List.replace_at(maze_.cells, getPos(maze_, x_, y_), %{x: x_, y: y_, wall: false})
+      cells: List.replace_at(maze_.cells, pos, %{x: x_, y: y_, wall: false})
     }
   end
 end
