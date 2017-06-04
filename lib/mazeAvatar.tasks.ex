@@ -5,7 +5,7 @@ defmodule Mix.Tasks.Mazeavatargenerate do
     {width, _} = Integer.parse(width_)
     {height, _} = Integer.parse(height_)
     MazeAvatar.generate( width, height )
-    |> MazeAvatar.drawMaze
+    |> MazeAvatar.drawMazeAscii()
     |> IO.puts
   end
 
