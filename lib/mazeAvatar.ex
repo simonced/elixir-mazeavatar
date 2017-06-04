@@ -24,9 +24,11 @@ defmodule MazeAvatar do
   end
 
 
-  # TODO generate an entrance an the TOP of the maze at a random location
+  # generate an entrance at the TOP of the maze at a random location
   def digEntrance(maze_) do
-    maze_
+    x = :rand.uniform(maze_.width-1)
+
+    digCellAt(maze_, x, 0)
   end
 
 
@@ -146,7 +148,7 @@ defmodule MazeAvatar do
   end
 
 
-  # TODO digging check per direction >>>
+  # digging check per direction >>>
   def canDigRight?(cells_, x_, y_) do
     # 6 positions going down
     positions = [

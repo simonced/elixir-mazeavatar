@@ -94,7 +94,20 @@ defmodule MazeAvatarTest do
     # next we test a position to dig that should not be allowed
     mazeMap3 = MazeAvatar.digCellAt(mazeMap2, 3, 2)
     assert false == MazeAvatar.canDigAt?(mazeMap3, {2, 1}, {2, 2})
-    
+
   end
+
+  
+  test "dig an entrance at a random location on the top layer" do
+    maze = MazeAvatar.fillGrid(5, 1)
+           |> MazeAvatar.digEntrance()
+           |> MazeAvatar.drawMazeAscii()
+
+    possibilities = ["X XXX", "XX XX", "XXX X"]
+
+    assert Enum.member?(possibilities, maze)
+    #IO.puts maze
+  end
+
 
 end
