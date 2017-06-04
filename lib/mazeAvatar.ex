@@ -71,6 +71,13 @@ defmodule MazeAvatar do
   end
 
 
+  # return true if x and y are inside outer walls of the grid
+  # so for a grid a 5x5, the positions being 0 to 4, valid position is between 1 and 3 included
+  def inGrid?(maze_, x_, y_) do
+    x_>0 && y_>0 && x_<maze_.width-1 && y_<maze_.height-1
+  end
+
+
   # returns a list representing the cells
   # @param List cells
   def _drawMap(cells, map_ \\ "", position \\ 0)

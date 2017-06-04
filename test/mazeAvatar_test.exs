@@ -43,7 +43,16 @@ defmodule MazeAvatarTest do
               |> MazeAvatar.drawMazeAscii()
 
     assert mazeMap == "XX\n X"
+  end
 
+
+  test "is position inside the outer walls of the grid" do
+    maze = MazeAvatar.fillGrid(5, 5)
+
+    assert true  == MazeAvatar.inGrid?(maze, 1, 1)
+    assert true  == MazeAvatar.inGrid?(maze, 3, 3)
+    assert false == MazeAvatar.inGrid?(maze, 0, 1) # false because in the wall in the left
+    assert false == MazeAvatar.inGrid?(maze, 4, 5) # false because in the wall at the bottom
   end
 
 end
