@@ -1,4 +1,6 @@
 defmodule MazeAvatar do
+
+
   @moduledoc """
   Documentation for MazeGenerator.
   Lib used: https://github.com/yuce/png
@@ -123,4 +125,76 @@ defmodule MazeAvatar do
       cells: List.replace_at(maze_.cells, pos, %{x: x_, y: y_, wall: false})
     }
   end
+
+
+  # not sure about the algo, but let's continue for now
+  # TODO fix for corners etc...
+  def canDigAt?(maze_, {x_from_, y_from_}, {x_to_, y_to_}) do
+    #arround = getCellsArround(maze_, x_to_, y_to_)
+
+    # vector of where we dig to
+    digDirection = {x_to_ - x_from_, y_to_ - y_from_}
+
+    inGrid?(maze_, x_to_, y_to_)
+    && case digDirection do
+      { 1,  0} -> canDigRight?( maze_.cells, x_to_, y_to_)
+      {-1,  0} -> canDigLeft?(  maze_.cells, x_to_, y_to_)
+      {0 ,  1} -> canDigDown?(  maze_.cells, x_to_, y_to_)
+      {0 , -1} -> canDigUp?(    maze_.cells, x_to_, y_to_)
+      _ -> false # should not happen
+    end
+  end
+
+
+  # TODO digging check per direction >>>
+  def canDigRight?(cells_, x_, y_) do
+    # 6 positions going down
+    positions = [
+      {x_  , y_-1}, {x_  , y_}, {x_  , y_+1},
+      {x_+1, y_-1}, {x_+1, y_}, {x_+1, y_+1}
+    ]
+
+    # we keep only the one that are walls, we should get 6
+    6 == filterWalls(cells_, positions) |> length
+  end
+
+  def canDigLeft?(cells_, x_, y_) do
+    # 6 positions going down
+    positions = [
+      {x_  , y_-1}, {x_  , y_}, {x_  , y_+1},
+      {x_-1, y_-1}, {x_-1, y_}, {x_-1, y_+1}
+    ]
+
+    # we keep only the one that are walls, we should get 6
+    6 == filterWalls(cells_, positions) |> length
+  end
+
+  def canDigDown?(cells_, x_, y_) do
+    # 6 positions going down
+    positions = [
+      {x_-1, y_  }, {x_, y_  }, {x_+1, y_  },
+      {x_-1, y_+1}, {x_, y_+1}, {x_+1, y_+1}
+    ]
+
+    # we keep only the one that are walls, we should get 6
+    6 == filterWalls(cells_, positions) |> length
+  end
+
+  def canDigUp?(cells_, x_, y_) do
+    # 6 positions going down
+    positions = [
+      {x_-1, y_  }, {x_, y_  }, {x_+1, y_  },
+      {x_-1, y_-1}, {x_, y_-1}, {x_+1, y_-1}
+    ]
+
+    # we keep only the one that are walls, we should get 6
+    6 == filterWalls(cells_, positions) |> length
+  end
+
+  # returns the cells that are wall at the positions in the list
+  defp filterWalls(cells_, positions_) do
+    Enum.filter(cells_, fn(cell) -> cell.wall && Enum.member?(positions_, {cell.x, cell.y}) end)
+  end
+  # <<<
+
 end
