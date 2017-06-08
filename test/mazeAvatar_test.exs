@@ -97,7 +97,7 @@ defmodule MazeAvatarTest do
 
   end
 
-  
+
   test "dig an entrance at a random location on the top layer" do
     maze = MazeAvatar.fillGrid(5, 1)
            |> MazeAvatar.digEntrance()
@@ -109,5 +109,24 @@ defmodule MazeAvatarTest do
     #IO.puts maze
   end
 
+
+  test "digging positions available" do
+    IO.puts "\n"
+    mazeMap = MazeAvatar.fillGrid(5, 5)
+              |> MazeAvatar.digCellAt(2, 0)
+              |> MazeAvatar.digCellAt(2, 1)
+              |> MazeAvatar.digCellAt(2, 2)
+
+    #mazeMap
+    #|> MazeAvatar.drawMazeAscii()
+    #|> IO.puts 
+
+    # should be [{3,2}, {2,3}, {1,2}]
+    # order is top right down left (like css)
+    # so it's easy to test different configurations
+    # in reality, once the possibilities are in the list, we should shuffle it and start digging
+
+    assert [{3,2}, {2,3}, {1,2}] == MazeAvatar.getDiggableCellsFrom(mazeMap, {2, 2})
+  end
 
 end

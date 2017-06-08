@@ -26,7 +26,8 @@ defmodule MazeAvatar do
 
   # generate an entrance at the TOP of the maze at a random location
   def digEntrance(maze_) do
-    x = :rand.uniform(maze_.width-1)
+    x = :rand.uniform(maze_.width-2)
+    #IO.puts "random x: #{x}"
 
     digCellAt(maze_, x, 0)
   end
@@ -122,6 +123,7 @@ defmodule MazeAvatar do
   # returns a new grid with a cell dug at position x y
   def digCellAt(maze_, x_, y_) do
     pos = getPos(maze_, x_, y_)
+
     %{width: maze_.width,
       height: maze_.height,
       cells: List.replace_at(maze_.cells, pos, %{x: x_, y: y_, wall: false})
@@ -129,16 +131,17 @@ defmodule MazeAvatar do
   end
 
 
+  def getDiggableCellsFrom(maze_, {x_, y_}) do
+    # simply filter the possibilities
+    [{x_, y_-1}, {x_+1, y_}, {x_, y_+1}, {x_-1, y_}]
+    |> Enum.filter( fn(pos) -> canDigAt?(maze_, {x_, y_}, pos) end )
+  end
+
+
   # not sure about the algo, but let's continue for now
-  # TODO fix for corners etc...
   def canDigAt?(maze_, {x_from_, y_from_}, {x_to_, y_to_}) do
-    #arround = getCellsArround(maze_, x_to_, y_to_)
-
-    # vector of where we dig to
-    digDirection = {x_to_ - x_from_, y_to_ - y_from_}
-
     inGrid?(maze_, x_to_, y_to_)
-    && case digDirection do
+    && case {x_to_ - x_from_, y_to_ - y_from_} do
       { 1,  0} -> canDigRight?( maze_.cells, x_to_, y_to_)
       {-1,  0} -> canDigLeft?(  maze_.cells, x_to_, y_to_)
       {0 ,  1} -> canDigDown?(  maze_.cells, x_to_, y_to_)
