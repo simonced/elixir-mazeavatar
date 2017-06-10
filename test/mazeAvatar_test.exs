@@ -7,6 +7,7 @@ defmodule MazeAvatarTest do
     assert MazeAvatar.fillGrid(2, 2) == %{
       width: 2,
       height: 2,
+      entrance: nil,
       cells: [
         %{x: 0, y: 0, wall: true},
         %{x: 1, y: 0, wall: true},

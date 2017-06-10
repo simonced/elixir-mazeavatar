@@ -18,24 +18,37 @@ defmodule MazeAvatar do
   # @return maze as %{width, height, cell[]}
   def generate(width_, height_) do
     fillGrid(width_, height_)
-           |> digEntrance()
-           |> digMaze()
-           |> digExit()
+    |> digEntrance()
+    |> (fn m -> digMaze(m, m.entrance) end).()
+    |> digExit()
   end
 
 
   # generate an entrance at the TOP of the maze at a random location
   def digEntrance(maze_) do
     x = :rand.uniform(maze_.width-2)
-    #IO.puts "random x: #{x}"
 
-    digCellAt(maze_, x, 0)
+    # set the entrance
+    %{maze_ | entrance: {x, 0}}
+    |> digCellAt(x, 0)
   end
 
 
-  # TODO starts from entrance and generate path randomly
-  def digMaze(maze_) do
-    maze_
+  # WIP
+  # randomly select an available position from "from_" and dig
+  # @param from_ is a %{x, y} hash
+  # @return maze
+  def digMaze(maze_, from_) do
+    getDiggableCellsFrom(maze_, from_)
+    |> Enum.shuffle()
+    |> Enum.reduce( maze_, fn to, m -> digMazeIfPossible(m, from_, to) end ) # TODO digCellAt THEN digMaze
+  end
+
+  defp digMazeIfPossible(maze_, {x_from_, y_from_}, {x_to_, y_to_}) do
+    case canDigAt?(maze_, {x_from_, y_from_}, {x_to_, y_to_}) do
+      true -> digCellAt(maze_, x_from_, y_from_) |> digMaze({x_to_, y_to_})
+      false -> maze_
+    end
   end
 
 
@@ -46,14 +59,14 @@ defmodule MazeAvatar do
 
 
   # TODO
-  def savePng(_grid_) do
+  def savePng(_maze_) do
     IO.puts "TODO"
   end
 
 
   # generate a grid of the maze size
   # with only walls!
-  # @return %{width, height, cells[])}
+  # @return %{width, height, entrance = {x, y}, cells = [])}
   # each cell is a map %{x (int), y (int), wall (boolean)}
   # ?do I need to have a map for each cell? only a wall boolean could be enough maybe?
   # will see later
@@ -62,6 +75,7 @@ defmodule MazeAvatar do
     %{
       width: width_,
       height: height_,
+      entrance: nil,
       cells: (for y <- 0..width_-1, x <- 0..height_-1, do: %{x: x, y: y, wall: true})
     }
   end
@@ -76,13 +90,6 @@ defmodule MazeAvatar do
   end
 
 
-  # return true if x and y are inside outer walls of the grid
-  # so for a grid a 5x5, the positions being 0 to 4, valid position is between 1 and 3 included
-  def inGrid?(maze_, x_, y_) do
-    x_>0 && y_>0 && x_<maze_.width-1 && y_<maze_.height-1
-  end
-
-
   # returns a list representing the cells
   # @param List cells
   def _drawMap(cells, map_ \\ "", position \\ 0)
@@ -91,6 +98,7 @@ defmodule MazeAvatar do
 
   def _drawMap([cell_|cells_], map_ , position) do
     _drawMap(cells_, map_ <> drawCell(cell_), position + 1)
+    #map_
   end
 
 
@@ -99,8 +107,15 @@ defmodule MazeAvatar do
   def drawCell(cell_) do
     case cell_.wall do
       true -> "X"
-      _ -> " "
+      _    -> " "
     end
+  end
+
+
+  # return true if x and y are inside outer walls of the grid
+  # so for a grid a 5x5, the positions being 0 to 4, valid position is between 1 and 3 included
+  def inGrid?(maze_, x_, y_) do
+    x_>0 && y_>0 && x_<maze_.width-1 && y_<maze_.height-1
   end
 
 
@@ -123,11 +138,8 @@ defmodule MazeAvatar do
   # returns a new grid with a cell dug at position x y
   def digCellAt(maze_, x_, y_) do
     pos = getPos(maze_, x_, y_)
-
-    %{width: maze_.width,
-      height: maze_.height,
-      cells: List.replace_at(maze_.cells, pos, %{x: x_, y: y_, wall: false})
-    }
+    newCells = List.replace_at(maze_.cells, pos, %{x: x_, y: y_, wall: false})
+    %{maze_ | cells: newCells}
   end
 
 
