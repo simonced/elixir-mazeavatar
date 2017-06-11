@@ -38,7 +38,7 @@ defmodule MazeAvatar do
   # @param from_ is a %{x, y} hash
   # @return maze
   def digMaze(maze_, from_) do
-    getDiggableCellsFrom(maze_, from_)
+    getDiggableCellsFrom(from_)
     |> Enum.shuffle()
     |> Enum.reduce( maze_, fn to, m -> digMazeIfPossible(m, from_, to) end )
   end
@@ -141,7 +141,7 @@ defmodule MazeAvatar do
   end
 
 
-  def getDiggableCellsFrom(maze_, {x_, y_}) do
+  def getDiggableCellsFrom({x_, y_}) do
     # simply filter the possibilities
     [{x_, y_-1}, {x_+1, y_}, {x_, y_+1}, {x_-1, y_}]
   end
@@ -151,17 +151,17 @@ defmodule MazeAvatar do
   def canDigAt?(maze_, {x_from_, y_from_}, {x_to_, y_to_}) do
     inGrid?(maze_, x_to_, y_to_)
     && case {x_to_ - x_from_, y_to_ - y_from_} do
-      { 1,  0} -> canDigRight?( maze_.cells, x_to_, y_to_)
-      {-1,  0} -> canDigLeft?(  maze_.cells, x_to_, y_to_)
-      {0 ,  1} -> canDigDown?(  maze_.cells, x_to_, y_to_)
-      {0 , -1} -> canDigUp?(    maze_.cells, x_to_, y_to_)
+      { 1,  0} -> canDigRight?( maze_, {x_to_, y_to_} )
+      {-1,  0} -> canDigLeft?(  maze_, {x_to_, y_to_} )
+      {0 ,  1} -> canDigDown?(  maze_, {x_to_, y_to_} )
+      {0 , -1} -> canDigUp?(    maze_, {x_to_, y_to_} )
       _ -> false # should not happen
     end
   end
 
 
   # digging check per direction >>>
-  def canDigRight?(cells_, x_, y_) do
+  def canDigRight?(maze_, {x_, y_}) do
     # 6 positions going down
     positions = [
       {x_  , y_-1}, {x_  , y_}, {x_  , y_+1},
@@ -169,10 +169,10 @@ defmodule MazeAvatar do
     ]
 
     # we keep only the one that are walls, we should get 6
-    6 == filterWalls(cells_, positions) |> length
+    6 == filterWalls(maze_, positions) |> length
   end
 
-  def canDigLeft?(cells_, x_, y_) do
+  def canDigLeft?(maze_, {x_, y_}) do
     # 6 positions going down
     positions = [
       {x_  , y_-1}, {x_  , y_}, {x_  , y_+1},
@@ -180,10 +180,10 @@ defmodule MazeAvatar do
     ]
 
     # we keep only the one that are walls, we should get 6
-    6 == filterWalls(cells_, positions) |> length
+    6 == filterWalls(maze_, positions) |> length
   end
 
-  def canDigDown?(cells_, x_, y_) do
+  def canDigDown?(maze_, {x_, y_}) do
     # 6 positions going down
     positions = [
       {x_-1, y_  }, {x_, y_  }, {x_+1, y_  },
@@ -191,10 +191,10 @@ defmodule MazeAvatar do
     ]
 
     # we keep only the one that are walls, we should get 6
-    6 == filterWalls(cells_, positions) |> length
+    6 == filterWalls(maze_, positions) |> length
   end
 
-  def canDigUp?(cells_, x_, y_) do
+  def canDigUp?(maze_, {x_, y_}) do
     # 6 positions going down
     positions = [
       {x_-1, y_  }, {x_, y_  }, {x_+1, y_  },
@@ -202,12 +202,12 @@ defmodule MazeAvatar do
     ]
 
     # we keep only the one that are walls, we should get 6
-    6 == filterWalls(cells_, positions) |> length
+    6 == filterWalls(maze_, positions) |> length
   end
 
   # returns the cells that are wall at the positions in the list
-  defp filterWalls(cells_, positions_) do
-    Enum.filter(cells_, fn(cell) -> cell.wall && Enum.member?(positions_, {cell.x, cell.y}) end)
+  defp filterWalls(maze_, positions_) do
+    Enum.filter positions_, fn({x, y}) -> getCellAt(maze_, x, y).wall end
   end
   # <<<
 

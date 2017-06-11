@@ -43,7 +43,7 @@ defmodule MazeAvatarTest do
               |> MazeAvatar.digCellAt(0, 1)
               |> MazeAvatar.drawMazeAscii()
 
-    assert mazeMap == "XX\n X"
+    assert mazeMap == "XXXX\n  XX"
   end
 
 
@@ -61,6 +61,7 @@ defmodule MazeAvatarTest do
     # will be used when randomly digging
     mazeMap = MazeAvatar.fillGrid(5, 5)
               |> MazeAvatar.digCellAt(2, 0)
+
     #IO.puts "\n"
     #IO.puts MazeAvatar.drawMazeAscii(mazeMap)
 
@@ -104,7 +105,7 @@ defmodule MazeAvatarTest do
            |> MazeAvatar.digEntrance()
            |> MazeAvatar.drawMazeAscii()
 
-    possibilities = ["X XXX", "XX XX", "XXX X"]
+    possibilities = ["XX  XXXXXX", "XXXX  XXXX", "XXXXXX  XX"]
 
     assert Enum.member?(possibilities, maze)
     #IO.puts maze
@@ -112,22 +113,7 @@ defmodule MazeAvatarTest do
 
 
   test "digging positions available" do
-    IO.puts "\n"
-    mazeMap = MazeAvatar.fillGrid(5, 5)
-              |> MazeAvatar.digCellAt(2, 0)
-              |> MazeAvatar.digCellAt(2, 1)
-              |> MazeAvatar.digCellAt(2, 2)
-
-    #mazeMap
-    #|> MazeAvatar.drawMazeAscii()
-    #|> IO.puts 
-
-    # should be [{3,2}, {2,3}, {1,2}]
-    # order is top right down left (like css)
-    # so it's easy to test different configurations
-    # in reality, once the possibilities are in the list, we should shuffle it and start digging
-
-    assert [{3,2}, {2,3}, {1,2}] == MazeAvatar.getDiggableCellsFrom(mazeMap, {2, 2})
+    assert [{2, 1}, {3,2}, {2,3}, {1,2}] == MazeAvatar.getDiggableCellsFrom({2, 2})
   end
 
 end
