@@ -34,14 +34,13 @@ defmodule MazeAvatar do
   end
 
 
-  # WIP
   # randomly select an available position from "from_" and dig
   # @param from_ is a %{x, y} hash
   # @return maze
   def digMaze(maze_, from_) do
     getDiggableCellsFrom(maze_, from_)
     |> Enum.shuffle()
-    |> Enum.reduce( maze_, fn to, m -> digMazeIfPossible(m, from_, to) end ) # TODO digCellAt THEN digMaze
+    |> Enum.reduce( maze_, fn to, m -> digMazeIfPossible(m, from_, to) end )
   end
 
   defp digMazeIfPossible(maze_, {x_from_, y_from_}, {x_to_, y_to_}) do
@@ -85,7 +84,7 @@ defmodule MazeAvatar do
   def drawMazeAscii(maze_) do
     _drawMap(maze_.cells)
     |> String.codepoints()
-    |> Enum.chunk(maze_.width)
+    |> Enum.chunk(maze_.width*2)
     |> Enum.join("\n")
   end
 
@@ -98,7 +97,6 @@ defmodule MazeAvatar do
 
   def _drawMap([cell_|cells_], map_ , position) do
     _drawMap(cells_, map_ <> drawCell(cell_), position + 1)
-    #map_
   end
 
 
@@ -106,8 +104,8 @@ defmodule MazeAvatar do
   # - X if wall and SPACE otherwise
   def drawCell(cell_) do
     case cell_.wall do
-      true -> "X"
-      _    -> " "
+      true -> "XX"
+      _    -> "  "
     end
   end
 
