@@ -144,7 +144,6 @@ defmodule MazeAvatar do
   def getDiggableCellsFrom(maze_, {x_, y_}) do
     # simply filter the possibilities
     [{x_, y_-1}, {x_+1, y_}, {x_, y_+1}, {x_-1, y_}]
-    |> Enum.filter( fn(pos) -> canDigAt?(maze_, {x_, y_}, pos) end )
   end
 
 
