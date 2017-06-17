@@ -8,6 +8,7 @@ defmodule MazeAvatarTest do
       width: 2,
       height: 2,
       entrance: nil,
+	  exit: nil,
       cells: [
         %{x: 0, y: 0, wall: true},
         %{x: 1, y: 0, wall: true},
@@ -116,4 +117,11 @@ defmodule MazeAvatarTest do
     assert [{2, 1}, {3,2}, {2,3}, {1,2}] == MazeAvatar.getDiggableCellsFrom({2, 2})
   end
 
+
+  test "check that an exit has been dug" do
+	maze = MazeAvatar.generate(5, 5)
+	
+	assert maze.exit != nil
+  end
+  
 end

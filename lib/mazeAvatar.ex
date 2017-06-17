@@ -51,9 +51,16 @@ defmodule MazeAvatar do
   end
 
 
-  # TODO find a position for the exit at the BOTTOM of the maze
+  # make an exit at the BOTTOM of the maze
   def digExit(maze_) do
-    maze_
+	# list possibilities on the lower path then we'll do a final dig for the exi
+	s_start = getPos(maze_, 1, maze_.height - 2)
+	s_end = getPos(maze_, maze_.width - 2, maze_.height - 2)
+	exit = Enum.slice(maze_.cells, s_start..s_end)
+	|> Enum.filter( &(&1.wall==false) )
+	|> Enum.random()
+
+	%{ digCellAt(maze_, exit.x, exit.y+1) | exit: {exit.x, exit.y+1} }
   end
 
 
@@ -75,6 +82,7 @@ defmodule MazeAvatar do
       width: width_,
       height: height_,
       entrance: nil,
+	  exit: nil,
       cells: (for y <- 0..width_-1, x <- 0..height_-1, do: %{x: x, y: y, wall: true})
     }
   end
