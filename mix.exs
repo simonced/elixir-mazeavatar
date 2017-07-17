@@ -28,6 +28,10 @@ defmodule MazeAvatar.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    [{:png, "~> 0.1.1"}]
+    [
+	  {:png, "~> 0.1.1"},
+	  {:credo, "~> 0.8", only: [:dev, :test]},
+	  {:benchmark, github: "simonced/elixir-benchmark", app: false}
+	]
   end
 end

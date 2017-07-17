@@ -1,4 +1,4 @@
-defmodule Mix.Tasks.Mazeavatargenerate do
+defmodule Mix.Tasks.Generate do
   use Mix.Task
 
   def run([width_, height_]) do
@@ -6,16 +6,16 @@ defmodule Mix.Tasks.Mazeavatargenerate do
     {height, _} = Integer.parse(height_)
 
     # benchmarking start
-    prev = System.monotonic_time()
+    prev = ElixirBenchmark.start()
 
     MazeAvatar.generate( width, height )
     |> MazeAvatar.drawMazeAscii()
     |> IO.puts
 
     # bechmark end
-    next = System.monotonic_time()
+    next = ElixirBenchmark.stop()
 
-    IO.puts "Elapsed time: #{System.convert_time_unit(next - prev, :native, :millisecond)}ms"
+    IO.puts "Elapsed time: #{ElixirBenchmark.getMs(prev, next)}ms"
 
   end
 
