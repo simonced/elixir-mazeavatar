@@ -1,16 +1,28 @@
 
 defmodule MazeAvatar.PNG do
 
-  @color_background {255, 255, 255}
-  @color_walls {0, 0, 0,}
+  # meanings:
+  # - hole: open (dug) cell where we can walk
+  # - wall: closed (non dug) cell
+  # - path: open cell leading to the exit
+  
+  # constant keyword list
+  @colors [hole: {255, 255, 255},
+			wall: {0, 0, 0,},
+			path: {255, 0, 0}]
+
+  @colors_index [hole: 0,
+				 wall: 1,
+				 path: 2]
+  
   
   # Save the maze as a PNG file
   def save(maze_, output_file_) do
-    # 8bit palette with 4 colors
-    palette = {:rgb, 8, [@color_background, @color_walls]}
+    # 8bit palette with colors
+    palette = {:rgb, 8, Keyword.values(@colors)}
 
 	# destination file
-    {st, pic} = File.open(output_file_, [:write])
+    {_st, pic} = File.open(output_file_, [:write])
     png = :png.create( %{
 		  :size    => {maze_.width, maze_.height},
 		  :mode    => {:indexed, 8},
@@ -30,16 +42,17 @@ defmodule MazeAvatar.PNG do
     File.close(pic)
   end
 
-  
+
+  # @param {int} row_ the row index we want
+  # @return list of color indexes for the provided row
   defp makeRow(maze_, row_) do
 
-	row_cells = MazeAvatar.getRow(maze_, row_-1)
-	
-    Enum.map(row_cells, &( case &1.wall do
-							 true -> 1
-							 false -> 0
-						   end ))
-	
+	MazeAvatar.getRow(maze_, row_-1)
+	|> Enum.map( &( case &1.type do
+					  :wall -> @colors_index[:wall]
+					  :hole -> @colors_index[:hole]
+					  :path -> @colors_index[:path]
+					end ))
   end
   
 end

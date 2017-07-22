@@ -49,7 +49,7 @@ defmodule MazeAvatar do
 	s_start = getPos(maze_, 1, maze_.height - 2)
 	s_end = getPos(maze_, maze_.width - 2, maze_.height - 2)
 	exit = Enum.slice(maze_.cells, s_start..s_end)
-	|> Enum.filter( &(&1.wall==false) )
+	|> Enum.filter( &(&1.type == :hole) )
 	|> Enum.random()
 
 	%{ digCellAt(maze_, exit.x, exit.y+1) | exit: {exit.x, exit.y+1} }
@@ -59,7 +59,7 @@ defmodule MazeAvatar do
   # generate a grid of the maze size
   # with only walls!
   # @return %{width, height, entrance = {x, y}, cells = [])}
-  # each cell is a map %{x (int), y (int), wall (boolean)}
+  # each cell is a map %{x (int), y (int), type (:wall, :hole or :path)}
   # ?do I need to have a map for each cell? only a wall boolean could be enough maybe?
   # will see later
   def fillGrid(width_, height_) do
@@ -69,7 +69,7 @@ defmodule MazeAvatar do
       height: height_,
       entrance: nil,
 	  exit: nil,
-      cells: (for y <- 0..width_-1, x <- 0..height_-1, do: %{x: x, y: y, wall: true})
+      cells: (for y <- 0..width_-1, x <- 0..height_-1, do: %{x: x, y: y, type: :wall})
     }
   end
 
@@ -97,8 +97,8 @@ defmodule MazeAvatar do
   # returns a character
   # - X if wall and SPACE otherwise
   def drawCell(cell_) do
-    case cell_.wall do
-      true -> "XX"
+    case cell_.type do
+      :wall -> "XX"
       _    -> "  "
     end
   end
@@ -137,7 +137,7 @@ defmodule MazeAvatar do
   # returns a new grid with a cell dug at position x y
   def digCellAt(maze_, x_, y_) do
     pos = getPos(maze_, x_, y_)
-    newCells = List.replace_at(maze_.cells, pos, %{x: x_, y: y_, wall: false})
+    newCells = List.replace_at(maze_.cells, pos, %{x: x_, y: y_, type: :hole})
     %{maze_ | cells: newCells}
   end
 
@@ -208,7 +208,7 @@ defmodule MazeAvatar do
 
   # returns the cells that are wall at the positions in the list
   defp filterWalls(maze_, positions_) do
-    Enum.filter positions_, fn({x, y}) -> getCellAt(maze_, x, y).wall end
+    Enum.filter positions_, fn({x, y}) -> getCellAt(maze_, x, y).type == :wall end
   end
   # <<<
 

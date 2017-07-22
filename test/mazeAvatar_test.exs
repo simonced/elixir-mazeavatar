@@ -10,10 +10,10 @@ defmodule MazeAvatarTest do
       entrance: nil,
 	  exit: nil,
       cells: [
-        %{x: 0, y: 0, wall: true},
-        %{x: 1, y: 0, wall: true},
-        %{x: 0, y: 1, wall: true},
-        %{x: 1, y: 1, wall: true}
+        %{x: 0, y: 0, type: :wall},
+        %{x: 1, y: 0, type: :wall},
+        %{x: 0, y: 1, type: :wall},
+        %{x: 1, y: 1, type: :wall}
       ]
     }
   end
@@ -32,9 +32,9 @@ defmodule MazeAvatarTest do
 	|> IO.inspect
 	
 	assert row == [
-	  %{x: 0, y: 1, wall: true},
-      %{x: 1, y: 1, wall: true},
-      %{x: 2, y: 1, wall: true}
+	  %{x: 0, y: 1, type: :wall},
+      %{x: 1, y: 1, type: :wall},
+      %{x: 2, y: 1, type: :wall}
 	]
   end
   
@@ -44,10 +44,10 @@ defmodule MazeAvatarTest do
             |> MazeAvatar.digCellAt(0, 1)
 
     assert maze2.cells == [
-      %{x: 0, y: 0, wall: true},
-      %{x: 1, y: 0, wall: true},
-      %{x: 0, y: 1, wall: false},
-      %{x: 1, y: 1, wall: true}
+      %{x: 0, y: 0, type: :wall},
+      %{x: 1, y: 0, type: :wall},
+      %{x: 0, y: 1, type: :hole},
+      %{x: 1, y: 1, type: :wall}
     ]
   end
 
