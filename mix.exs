@@ -1,4 +1,4 @@
-defmodule MazeAvatar.Mixfile do
+ defmodule MazeAvatar.Mixfile do
   use Mix.Project
 
   def project do

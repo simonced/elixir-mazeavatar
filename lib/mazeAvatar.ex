@@ -1,19 +1,11 @@
 defmodule MazeAvatar do
 
-
   @moduledoc """
   Documentation for MazeGenerator.
   Lib used: https://github.com/yuce/png
   """
 
-
-  # main genaration entry point
-  def generateAndSavePng(width_, height_) do
-    generate(height_, width_)
-    |> savePng()
-  end
-
-
+  
   # TODO this function will generate the maze
   # @return maze as %{width, height, cell[]}
   def generate(width_, height_) do
@@ -61,12 +53,6 @@ defmodule MazeAvatar do
 	|> Enum.random()
 
 	%{ digCellAt(maze_, exit.x, exit.y+1) | exit: {exit.x, exit.y+1} }
-  end
-
-
-  # TODO
-  def savePng(_maze_) do
-    IO.puts "TODO"
   end
 
 
@@ -133,6 +119,13 @@ defmodule MazeAvatar do
     y_ * maze_.width + x_
   end
 
+
+  # @param int row_ : row number starts at 0
+  def getRow(maze_, row_) do
+ 	start = maze_.width * row_
+	Enum.slice(maze_.cells, start, maze_.width)
+  end
+  
 
   # return a cell from the maze at coordinates x y
   def getCellAt(maze_, x_, y_) do

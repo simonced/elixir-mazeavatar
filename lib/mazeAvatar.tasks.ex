@@ -8,7 +8,7 @@ defmodule Mix.Tasks.Generate do
     # benchmarking start
     prev = ElixirBenchmark.start()
 
-    MazeAvatar.generate( width, height )
+    maze = MazeAvatar.generate( width, height )
     |> MazeAvatar.drawMazeAscii()
     |> IO.puts
 
@@ -17,6 +17,35 @@ defmodule Mix.Tasks.Generate do
 
     IO.puts "Elapsed time: #{ElixirBenchmark.getMs(prev, next)}ms"
 
+	maze
+  end
+
+end
+
+
+
+defmodule Mix.Tasks.GeneratePng do
+  use Mix.Task
+
+  def run([width_, height_, file_]) do
+	{width, _} = Integer.parse(width_)
+    {height, _} = Integer.parse(height_)
+
+    # benchmarking start
+    prev = ElixirBenchmark.start()
+
+    maze = MazeAvatar.generate( width, height )
+
+	# MazeAvatar.drawMazeAscii(maze)
+	# |> IO.puts
+
+    # bechmark end
+    next = ElixirBenchmark.stop()
+
+    IO.puts "Elapsed time: #{ElixirBenchmark.getMs(prev, next)}ms"
+
+	# Next, generating the PNG file
+	MazeAvatar.PNG.save(maze, file_ )
   end
 
 end

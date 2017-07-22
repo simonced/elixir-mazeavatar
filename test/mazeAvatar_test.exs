@@ -25,6 +25,19 @@ defmodule MazeAvatarTest do
     assert MazeAvatar.getPos(maze, 0, 1) == 2
   end
 
+  
+  test "get row" do
+	maze = MazeAvatar.fillGrid(3, 3)
+	row = MazeAvatar.getRow(maze, 1)
+	|> IO.inspect
+	
+	assert row == [
+	  %{x: 0, y: 1, wall: true},
+      %{x: 1, y: 1, wall: true},
+      %{x: 2, y: 1, wall: true}
+	]
+  end
+  
 
   test "dig a hole" do
     maze2 = MazeAvatar.fillGrid(2,2)
