@@ -5,7 +5,7 @@ defmodule MazeAvatar.PNG do
   # - hole: open (dug) cell where we can walk
   # - wall: closed (non dug) cell
   # - path: open cell leading to the exit
-  
+
   # constant keyword list
   @colors [hole: {255, 255, 255},
 			wall: {0, 0, 0,},
@@ -14,8 +14,8 @@ defmodule MazeAvatar.PNG do
   @colors_index [hole: 0,
 				 wall: 1,
 				 path: 2]
-  
-  
+
+
   # Save the maze as a PNG file
   def save(maze_, output_file_) do
     # 8bit palette with colors
@@ -54,5 +54,5 @@ defmodule MazeAvatar.PNG do
 					  :path -> @colors_index[:path]
 					end ))
   end
-  
+
 end

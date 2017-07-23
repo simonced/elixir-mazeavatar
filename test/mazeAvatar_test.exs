@@ -25,11 +25,10 @@ defmodule MazeAvatarTest do
     assert MazeAvatar.getPos(maze, 0, 1) == 2
   end
 
-  
+
   test "get row" do
 	maze = MazeAvatar.fillGrid(3, 3)
 	row = MazeAvatar.getRow(maze, 1)
-	|> IO.inspect
 	
 	assert row == [
 	  %{x: 0, y: 1, type: :wall},
@@ -37,7 +36,7 @@ defmodule MazeAvatarTest do
       %{x: 2, y: 1, type: :wall}
 	]
   end
-  
+
 
   test "dig a hole" do
     maze2 = MazeAvatar.fillGrid(2,2)
@@ -119,10 +118,9 @@ defmodule MazeAvatarTest do
            |> MazeAvatar.digEntrance()
            |> MazeAvatar.drawMazeAscii()
 
-    possibilities = ["XX  XXXXXX", "XXXX  XXXX", "XXXXXX  XX"]
+    possibilities = ["XX..XXXXXX", "XXXX..XXXX", "XXXXXX..XX"]
 
     assert Enum.member?(possibilities, maze)
-    #IO.puts maze
   end
 
 
@@ -136,5 +134,5 @@ defmodule MazeAvatarTest do
 	
 	assert maze.exit != nil
   end
-  
+
 end

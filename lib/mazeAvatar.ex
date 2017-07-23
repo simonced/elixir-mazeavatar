@@ -5,14 +5,13 @@ defmodule MazeAvatar do
   Lib used: https://github.com/yuce/png
   """
 
-  
+
   # TODO this function will generate the maze
   # @return maze as %{width, height, cell[]}
   def generate(width_, height_) do
     fillGrid(width_, height_)
     |> digEntrance()
     |> (fn m -> digMaze(m, m.entrance) end).()
-    |> digExit()
   end
 
 
@@ -22,7 +21,7 @@ defmodule MazeAvatar do
 
     # set the entrance
     %{maze_ | entrance: {x, 0}}
-    |> digCellAt(x, 0)
+    |> digCellAt(x, 0, :path)
   end
 
 
@@ -37,22 +36,24 @@ defmodule MazeAvatar do
 
   defp digMazeIfPossible(maze_, {x_from_, y_from_}, {x_to_, y_to_}) do
     case canDigAt?(maze_, {x_from_, y_from_}, {x_to_, y_to_}) do
-      true -> digCellAt(maze_, x_from_, y_from_) |> digMaze({x_to_, y_to_})
+      true	-> digCellAt(maze_, x_to_, y_to_) |> digExitTry({x_to_, y_to_}) |> digMaze({x_to_, y_to_})
       false -> maze_
     end
   end
 
+  defp digExitTry(maze_, {x_, y_}) do
+    height = maze_.height
+    no_exit = maze_.exit == nil
+    case y_ do
+      y when y == height-2 and no_exit -> digExit(maze_, x_, y_+1)
+      _ -> maze_
+    end
+  end
 
-  # make an exit at the BOTTOM of the maze
-  def digExit(maze_) do
-	# list possibilities on the lower path then we'll do a final dig for the exi
-	s_start = getPos(maze_, 1, maze_.height - 2)
-	s_end = getPos(maze_, maze_.width - 2, maze_.height - 2)
-	exit = Enum.slice(maze_.cells, s_start..s_end)
-	|> Enum.filter( &(&1.type == :hole) )
-	|> Enum.random()
 
-	%{ digCellAt(maze_, exit.x, exit.y+1) | exit: {exit.x, exit.y+1} }
+  defp digExit(maze_, x_, y_) do
+    %{maze_ | exit: {x_, y_}}
+    |> digCellAt(x_, y_, :path)
   end
 
 
@@ -76,7 +77,7 @@ defmodule MazeAvatar do
 
   # generates a map of the maze in Ascii format
   def drawMazeAscii(maze_) do
-    _drawMap(maze_.cells)
+    drawMap(maze_.cells)
     |> String.codepoints()
     |> Enum.chunk(maze_.width*2)
     |> Enum.join("\n")
@@ -85,20 +86,21 @@ defmodule MazeAvatar do
 
   # returns a list representing the cells
   # @param List cells
-  def _drawMap(cells, map_ \\ "", position \\ 0)
+  defp drawMap(cells, map_ \\ "", position \\ 0)
 
-  def _drawMap([], map_ , _), do: map_
+  defp drawMap([], map_ , _), do: map_
 
-  def _drawMap([cell_|cells_], map_ , position) do
-    _drawMap(cells_, map_ <> drawCell(cell_), position + 1)
+  defp drawMap([cell_|cells_], map_ , position) do
+    drawMap(cells_, map_ <> drawCell(cell_), position + 1)
   end
 
 
   # returns a character
   # - X if wall and SPACE otherwise
-  def drawCell(cell_) do
+  defp drawCell(cell_) do
     case cell_.type do
       :wall -> "XX"
+      :path -> ".."
       _    -> "  "
     end
   end
@@ -125,7 +127,7 @@ defmodule MazeAvatar do
  	start = maze_.width * row_
 	Enum.slice(maze_.cells, start, maze_.width)
   end
-  
+
 
   # return a cell from the maze at coordinates x y
   def getCellAt(maze_, x_, y_) do
@@ -135,9 +137,9 @@ defmodule MazeAvatar do
 
 
   # returns a new grid with a cell dug at position x y
-  def digCellAt(maze_, x_, y_) do
+  def digCellAt(maze_, x_, y_, type \\ :hole) do
     pos = getPos(maze_, x_, y_)
-    newCells = List.replace_at(maze_.cells, pos, %{x: x_, y: y_, type: :hole})
+    newCells = List.replace_at(maze_.cells, pos, %{x: x_, y: y_, type: type})
     %{maze_ | cells: newCells}
   end
 
