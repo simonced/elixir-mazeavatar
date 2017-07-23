@@ -8,7 +8,7 @@ defmodule MazeAvatar.PNG do
 
   # constant keyword list
   @colors [hole: {255, 255, 255},
-			wall: {0, 0, 0,},
+			wall: {100, 100, 100,},
 			path: {255, 0, 0}]
 
   @colors_index [hole: 0,

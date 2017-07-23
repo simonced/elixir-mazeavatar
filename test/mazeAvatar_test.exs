@@ -131,6 +131,8 @@ defmodule MazeAvatarTest do
 
   test "check that an exit has been dug" do
 	maze = MazeAvatar.generate(5, 5)
+
+    IO.inspect maze
 	
 	assert maze.exit != nil
   end

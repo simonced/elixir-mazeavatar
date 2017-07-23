@@ -9,13 +9,14 @@ defmodule Mix.Tasks.Generate do
     prev = ElixirBenchmark.start()
 
     maze = MazeAvatar.generate( width, height )
-    |> MazeAvatar.drawMazeAscii()
-    |> IO.puts
 
     # bechmark end
     next = ElixirBenchmark.stop()
 
     IO.puts "Elapsed time: #{ElixirBenchmark.getMs(prev, next)}ms"
+
+    MazeAvatar.drawMazeAscii(maze)
+    |> IO.puts
 
 	maze
   end

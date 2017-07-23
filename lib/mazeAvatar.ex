@@ -9,9 +9,10 @@ defmodule MazeAvatar do
   # TODO this function will generate the maze
   # @return maze as %{width, height, cell[]}
   def generate(width_, height_) do
-    fillGrid(width_, height_)
-    |> digEntrance()
-    |> (fn m -> digMaze(m, m.entrance) end).()
+    {_, maze} = fillGrid(width_, height_)
+                |> digEntrance()
+                |> (fn m -> digMaze({:no, m}, m.entrance) end).()
+    maze
   end
 
 
@@ -28,16 +29,41 @@ defmodule MazeAvatar do
   # randomly select an available position from "from_" and dig
   # @param from_ is a %{x, y} hash
   # @return maze
-  def digMaze(maze_, from_) do
-    getDiggableCellsFrom(from_)
+  def digMaze({status_, maze_}, from_) do
+    {exit_status, maze} = getDiggableCellsFrom(from_)
     |> Enum.shuffle()
-    |> Enum.reduce( maze_, fn to, m -> digMazeIfPossible(m, from_, to) end )
+    |> Enum.filter(&(canDigAt?(maze_, from_, &1)))
+    |> Enum.reduce( {status_, maze_}, fn to, maze_w_status -> digMazeReduce(maze_w_status, from_, to) end )
+
+    {exit_status, maze}
   end
 
-  defp digMazeIfPossible(maze_, {x_from_, y_from_}, {x_to_, y_to_}) do
-    case canDigAt?(maze_, {x_from_, y_from_}, {x_to_, y_to_}) do
-      true	-> digCellAt(maze_, x_to_, y_to_) |> digExitTry({x_to_, y_to_}) |> digMaze({x_to_, y_to_})
-      false -> maze_
+  defp digMazeReduce({status_, maze_}, from_, to_) do
+    {exit_status, maze} = digMazeIfPossible({status_, maze_}, from_, to_)
+
+    path_status = case {exit_status, status_} do
+      {:yes, _} -> :yes
+      {_, :yes} -> :yes
+      _ -> :no
+    end
+
+    maze = case path_status do
+      :yes -> markPath(maze, from_)
+      _    -> maze
+    end
+
+    {path_status, maze}
+  end
+
+  defp digMazeIfPossible({status_, maze_}, {x_from_, y_from_}, {x_to_, y_to_}) do
+    digResult = case canDigAt?(maze_, {x_from_, y_from_}, {x_to_, y_to_}) do
+      true	-> digCellAt(maze_, x_to_, y_to_) |> digExitTry({x_to_, y_to_})
+      false -> {:cantdig, maze_}
+    end
+
+    _digResult2 = case digResult do
+      {:cantdig, m} -> {status_, m}
+      {s, m}        -> digMaze({s, m}, {x_to_, y_to_})
     end
   end
 
@@ -45,9 +71,15 @@ defmodule MazeAvatar do
     height = maze_.height
     no_exit = maze_.exit == nil
     case y_ do
-      y when y == height-2 and no_exit -> digExit(maze_, x_, y_+1)
-      _ -> maze_
+      y when y == height-2 and no_exit -> {:yes, digExit(maze_, x_, y_+1)}
+      _ -> {:no, maze_}
     end
+  end
+
+  defp markPath(maze_, {x_, y_}) do
+    pos = getPos(maze_, x_, y_)
+    newCells = List.replace_at(maze_.cells, pos, %{x: x_, y: y_, type: :path})
+    %{maze_ | cells: newCells}
   end
 
 
