@@ -50,3 +50,16 @@ defmodule Mix.Tasks.GeneratePng do
   end
 
 end
+
+
+defmodule Mix.Tasks.GeneratePngAnim do
+  use Mix.Task
+
+  def run([width_, height_, file_]) do
+	{width, _} = Integer.parse(width_)
+    {height, _} = Integer.parse(height_)
+
+    MazeAvatar.generateAnim( width, height, file_ )
+  end
+
+end

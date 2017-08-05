@@ -16,6 +16,23 @@ defmodule MazeAvatar do
   end
 
 
+  # @return maze as %{width, height, cell[]}
+  def generateAnim(width_, height_, file_) do
+    {_, maze} = fillGrid(width_, height_)
+                |> (fn m -> {:no, digEntrance(m)} end).()
+
+    # here I add keys to the maze structure
+    # - file: the base filename to save to
+    # - step: the digging step, will be used to count the file names
+    # - dig:  the digging position
+    Map.put_new(maze, :file, file_)
+    |> Map.put_new(:step, 0)
+    |> Map.put_new(:dig, maze.entrance)
+    |> (fn m -> digMaze({:no, m}, m.entrance) end).()
+    |> (fn {_, m} -> MazeAvatar.PNG.save(%{m | dig: nil}, getAnimNextOutputFile(m)) end).()
+  end
+
+
   # generate an entrance at the TOP of the maze at a random location
   def digEntrance(maze_) do
     x = :rand.uniform(maze_.width-2)
@@ -32,7 +49,7 @@ defmodule MazeAvatar do
   def digMaze({status_, maze_}, from_) do
     {exit_status, maze} = getDiggableCellsFrom(from_)
     |> Enum.shuffle()
-    |> Enum.filter(&(canDigAt?(maze_, from_, &1)))
+    |> Enum.filter( &(canDigAt?(maze_, from_, &1)) )
     |> Enum.reduce( {status_, maze_}, fn to, maze_w_status -> digMazeReduce(maze_w_status, from_, to) end )
 
     {exit_status, maze}
@@ -172,7 +189,21 @@ defmodule MazeAvatar do
   def digCellAt(maze_, x_, y_, type \\ :hole) do
     pos = getPos(maze_, x_, y_)
     newCells = List.replace_at(maze_.cells, pos, %{x: x_, y: y_, type: type})
-    %{maze_ | cells: newCells}
+
+    case Map.get(maze_, :file) do
+      nil -> %{maze_ | cells: newCells}
+      _   -> digCellAndSave( %{maze_ | cells: newCells, dig: {x_, y_}, step: maze_.step + 1} )
+    end
+  end
+
+  defp digCellAndSave(maze_) do
+    MazeAvatar.PNG.save(maze_, getAnimNextOutputFile(maze_))
+    # return the maze as is
+    maze_
+  end
+
+  defp getAnimNextOutputFile(maze_) do
+    String.replace(maze_.file, ".", "_#{maze_.step}.")
   end
 
 

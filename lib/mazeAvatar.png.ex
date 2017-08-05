@@ -8,12 +8,14 @@ defmodule MazeAvatar.PNG do
 
   # constant keyword list
   @colors [hole: {255, 255, 255},
-			wall: {100, 100, 100,},
-			path: {255, 0, 0}]
+           wall: {100, 100, 100,},
+           path: {255, 0, 0},
+           dig: {0, 255, 0}]
 
   @colors_index [hole: 0,
-				 wall: 1,
-				 path: 2]
+                 wall: 1,
+                 path: 2,
+                 dig: 3]
 
 
   # Save the maze as a PNG file
@@ -47,12 +49,19 @@ defmodule MazeAvatar.PNG do
   # @return list of color indexes for the provided row
   defp makeRow(maze_, row_) do
 
-	MazeAvatar.getRow(maze_, row_-1)
-	|> Enum.map( &( case &1.type do
-					  :wall -> @colors_index[:wall]
-					  :hole -> @colors_index[:hole]
-					  :path -> @colors_index[:path]
-					end ))
+	row = MazeAvatar.getRow(maze_, row_-1)
+        |> Enum.map( &( case &1.type do
+          :wall -> @colors_index[:wall]
+          :hole -> @colors_index[:hole]
+          :path -> @colors_index[:path]
+        end ))
+
+    # if we have a dig position in memory, we use it
+    # TODO
+    case Map.get(maze_, :dig) do
+      {x, y} when y == (row_ - 1) -> List.replace_at(row, x, @colors_index[:dig])
+      _ -> row
+    end
   end
 
 end
