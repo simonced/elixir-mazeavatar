@@ -1,6 +1,6 @@
 # MazeAvatar
 
-This is a simple project for me to lear Elixir.
+This is a simple project for me to learn Elixir.
 
 The idea is to generate a maze and making an avatar with it in PNG format.
 
@@ -71,7 +71,8 @@ Resulting picture:
 
 ![30x30 maze picture](_rsc/maze_sample.gif)
 
-The resulting picture will be saved in the project root folder.
+The resulting picture will be saved in the project root folder.  
+The picture above has been scaled up, because otherwise it's 30x30px and is very small.
 
 ### Generating the step when digging the maze
 
@@ -82,7 +83,7 @@ Picture names are numbered in sequence from 1.
 	
 Preview of the animation:
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/pypfuBaT5HY" frameborder="0" allowfullscreen></iframe>
+[![digging animation](https://img.youtube.com/vi/pypfuBaT5HY/0.jpg)](https://www.youtube.com/watch?v=pypfuBaT5HY)
 
 **Note:** The animation has been made on Youtube, mazeAvatar only generates all the frames of the digging process.
 
@@ -106,8 +107,16 @@ Settings:
 
 ## Known bugs
 
-One bug that I know of and I have to figure out what is going on:
+One bug that I know of and that I have yet to figure out:
 
 - the algorithm fails when trying to make a NON square shaped maze
 
 If you want to have a look as well, PR are welcome ;)
+
+## What's next?
+
+I am not sure if I'll improve it or not, I learned a lot of Elixir thanks to that project and I feel I can move on other topics with Elixir now.  
+But I would like to add some options like:
+
+- pixel size of the result picture (currently only 1px size per "block of data")
+- command line parameter to display the path to the exit (ON/OFF)
